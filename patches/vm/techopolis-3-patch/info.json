@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "patchId": "vm/techopolis-3-patch",
+  "patchName": "Techopolis 汉化补丁",
+  "author": "VM",
+  "description": "为 Techopolis 3 整合包提供的社区手动汉化。",
+  "website": "https://vmct-cn.top/",
+  "license": "ARR",
+  "iconUrl": "https://example.com/icon.png",
+  "versions": [
+    {
+      "patchVersion": "v1",
+      "releaseDate": "2024-05-21T12:00:00Z",
+      "changelog": "- 初始版本发布，提供基础汉化支持。",
+      "supportedModpackVersions": [
+        {
+          "type": "CurseForge",
+          "name": "876543",
+          "version": "5432109"
+        }
+      ],
+      "downloads": [
+        {
+          "type": "direct",
+          "name": "GitHub Release (推荐)",
+          "url": "http://tntfiles.com/8b01jvpsum",
+          "sha1": "46ab4e10ba92d3dc2eab2b045bdb6292d964df4e",
+          "postInstallAction": {
+            "url": "https://vmct-cn.top/",
+            "promptMessage": "感谢您使用本汉化补丁！这是我们的第一个测试版本。是否愿意跳转到作者网站查看更多信息？",
+            "cancellable": true,
+            "respectGlobalIgnore": true
+          }
+        },
+        {
+          "type": "manual",
+          "name": "备用网盘下载",
+          "url": "https://pan.example.com/s/123456abcdefg"
+        }
+      ]
+    }
+  ]
+}

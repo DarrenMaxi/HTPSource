@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "lastUpdated": "2024-05-21T13:00:00Z",
+  "patches": {
+    "curseforge:876543": [
+      {
+        "infoPath": "./patches/vm/techopolis-3-patch/info.json",
+        "patchId": "vm/techopolis-3-patch",
+        "patchName": "Techopolis 汉化补丁",
+        "author": "VM",
+        "description": "为 Techopolis 3 整合包提供的社区手动汉化。",
+        "latestVersion": "v1",
+        "translationType": "manual",
+        "availableDownloadTypes": ["direct", "manual"]
+      }
+    ]
+  }
+}
