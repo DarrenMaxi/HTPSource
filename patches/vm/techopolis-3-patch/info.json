@@ -14,9 +14,9 @@
       "changelog": "- 初始版本发布，提供基础汉化支持。",
       "supportedModpackVersions": [
         {
-          "type": "CurseForge",
-          "name": "876543",
-          "version": "5432109"
+          "type": "Curse",
+          "name": "Techopolis 3",
+          "version": "9.0"
         }
       ],
       "downloads": [
