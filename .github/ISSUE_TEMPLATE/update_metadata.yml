@@ -1,0 +1,78 @@
+name: 更新/提交补丁元数据 (高级)
+description: 高级用户通道。直接提交 info.json 和 translation-manifest.json 内容。
+title: "[元数据更新]: <补丁名称>"
+labels: ["metadata-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **此模板适用于能够自行编写 `info.json` 和 `translation-manifest.json` 的高级用户。**
+        - 您无需上传任何文件，只需粘贴 JSON 内容即可。
+        - **重要**: 您的 GitHub 用户名 (`${{ github.actor }}`) 将被用作您在仓库中的作者目录名 (例如 `patches/${{ github.actor }}/...`)。
+
+  - type: input
+    id: patchName
+    attributes:
+      label: 补丁名称
+      description: 汉化补丁的显示名称，用于生成目录名和在索引中显示。
+      placeholder: "科技城3 精翻汉化"
+    validations:
+      required: true
+
+  - type: textarea
+    id: infoJsonContent
+    attributes:
+      label: info.json 内容
+      description: "请将您的 info.json 文件的完整内容粘贴到此处。请确保其为有效的 JSON 格式。"
+      placeholder: |
+        ```json
+        {
+            "formatVersion": 1,
+            "patchId": "您的用户名/补丁slug",
+            "patchName": "补丁名称",
+            "author": "作者",
+            "versions": [
+                {
+                    "patchVersion": "v1.2.0",
+                    "releaseDate": "...",
+                    "supportedModpackVersions": [
+                        { "type": "CurseForge", "name": "Techopolis 3", "version": "9.0" }
+                    ],
+                    "downloads": [
+                        {
+                            "type": "direct",
+                            "name": "GitHub Release",
+                            "url": "https://.../your-patch-v1.2.0.htp",
+                            "sha1": "..."
+                        }
+                    ]
+                }
+            ]
+        }
+        ```
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: manifestJsonContent
+    attributes:
+      label: translation-manifest.json 内容
+      description: "请将您的 translation-manifest.json 文件的完整内容粘贴到此处。请确保其为有效的 JSON 格式。"
+      placeholder: |
+        ```json
+        {
+          "formatVersion": 1,
+          "patchName": "“科技城3”整合包精翻汉化",
+          "patchVersion": "v1.2.0",
+          "patchAuthor": "VM化组",
+          "updateInfoUrl": "https://.../info.json",
+          "supportedModpacks": [
+            { "type": "CurseForge", "name": "Techopolis 3", "version": "9.0" }
+          ],
+          "fileManifest": []
+        }
+        ```
+      render: json
+    validations:
+      required: true

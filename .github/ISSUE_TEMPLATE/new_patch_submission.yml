@@ -1,94 +1,82 @@
 name: 提交新的汉化补丁
-description: 使用此表单提交一个新的汉化补丁或更新现有补丁。
-title: "[补丁提交]: <你的补丁名称>"
-labels: ["new-patch"]
+description: 使用此模板提交一个新的整合包汉化补丁。
+title: "[新补丁]: <补丁名称>"
+labels: ["new-patch-submission", "enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
         感谢您为社区贡献汉化补丁！请仔细填写以下信息。
-        **重要提示：请务必在下方上传一个只包含 `overrides` 文件夹的 `.zip` 压缩包。**
+        **重要提示**: 请确保您上传的 .zip 压缩包的根目录中只有一个 `overrides` 文件夹。
 
   - type: input
     id: patchName
     attributes:
-      label: 汉化补丁名称
-      description: 补丁的正式名称，例如：“艾尔登之环”整合包精翻汉化
-    validations:
-      required: true
-
-  - type: input
-    id: patchVersion
-    attributes:
-      label: 汉化补丁版本号
-      description: 补丁自身的版本号，请遵循语义化版本规范，例如：v1.2.0
+      label: 补丁名称
+      description: 汉化补丁的显示名称，例如 “科技城3 精翻汉化”。
+      placeholder: "“科技城3”整合包精翻汉化"
     validations:
       required: true
 
   - type: input
     id: patchAuthor
     attributes:
-      label: 汉化作者/团队名称
-      description: 你的名字或团队名称，例如：薪王汉化组
+      label: 作者/团队名称
+      description: 您的名字或汉化组的名称。
+      placeholder: "VM汉化组"
     validations:
       required: true
-      
+
+  - type: input
+    id: patchVersion
+    attributes:
+      label: 补丁版本号
+      description: "遵循语义化版本规范，例如 `v1.2.0` 或 `1.2.0`。"
+      placeholder: "v1.2.0"
+    validations:
+      required: true
+
   - type: textarea
     id: description
     attributes:
       label: 补丁描述
-      description: 简要介绍补丁的内容、特色等。
+      description: 简要描述这个补丁做了什么。
+      placeholder: "对整合包内新增的模组、任务线和提示进行了全面汉化。"
     validations:
       required: true
       
-  - type: dropdown
-    id: translationType
+  - type: textarea
+    id: changelog
     attributes:
-      label: 翻译类型
-      description: 选择最符合您补丁的翻译质量/来源类型。
-      options:
-        - manual  # 人工翻译
-        - machine # 机器翻译
-        - official # 官方翻译
+      label: 更新日志 (Changelog)
+      description: "针对此版本的更新内容。如果这是第一个版本，可以填写“首次发布”。支持多行。"
+      placeholder: |
+        - 修复了第三章任务描述的错别字。
+        - 新增了对 Mod X 的汉化。
     validations:
       required: true
-      
+
   - type: textarea
     id: supportedModpacks
     attributes:
       label: 支持的整合包列表
       description: |
-        定义此补丁版本支持的整合包。每行一个，格式为 `类型,项目标识,文件版本`。
-        类型支持 `CurseForge` 或 `Modrinth`。
-        项目标识为 CurseForge Project ID 或 Modrinth Slug/Project ID。
-        文件版本为 CurseForge File ID 或 Modrinth Version ID。
+        **每行一个整合包**，格式为 `平台,整合包名称,整合包版本`。
+        平台可选值为 `CurseForge`, `Modrinth`, `Other`。
+        请确保逗号为英文逗号 `,`。
       placeholder: |
-        CurseForge,654321,4187589
-        Modrinth,mechanized-mayhem,aBcDeFgH
+        CurseForge, Techopolis 3, 9.0
+        CurseForge, Techopolis 3, 9.1
+        Modrinth, Fabulously Optimized, 5.8.0
     validations:
       required: true
 
   - type: textarea
-    id: changelog
+    id: attachment
     attributes:
-      label: 更新日志
-      description: 描述此版本的主要变更内容。
+      label: 上传补丁压缩包
+      description: |
+        请将只包含 `overrides/` 文件夹的 `.zip` 文件拖拽到这里上传。
+        **请务必等待文件上传完成，出现类似 `[patch.zip](https://github.com/...)` 的链接后再提交 Issue。**
     validations:
       required: true
-      
-  - type: input
-    id: website
-    attributes:
-      label: 项目网站 (可选)
-      description: 你的汉化项目主页、GitHub 仓库或其他相关链接。
-
-  - type: input
-    id: postInstallNotes
-    attributes:
-      label: 安装后提示 (可选)
-      description: 安装成功后需要向用户显示的提示信息，例如提醒配置游戏内字体。
-
-  - type: markdown
-    attributes:
-      value: |
-        **最后一步：** 请将你的补丁压缩包（必须只包含 `overrides` 文件夹）拖拽到下方的文本框中进行上传。

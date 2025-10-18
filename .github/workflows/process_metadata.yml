@@ -1,0 +1,66 @@
+name: Process Metadata Update
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  process-metadata-submission:
+    if: github.event.label.name == 'metadata-update'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Process metadata submission
+        id: process
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: python .github/scripts/process_metadata.py
+
+      - name: Create Pull Request for Metadata
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: ${{ steps.process.outputs.pr_title }}
+          title: ${{ steps.process.outputs.pr_title }}
+          body: ${{ steps.process.outputs.pr_body }}
+          branch: ${{ steps.process.outputs.branch_name }}
+          base: main # 或者你的主分支名称
+          labels: metadata-update
+          reviewers: ${{ github.event.issue.user.login }}
+          add-paths: |
+            index.json
+            patches/
+
+      - name: Comment on issue with PR link
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = `${{ steps.cpr.outputs.pull-request-number }}`;
+            const userLogin = context.payload.issue.user.login;
+            let commentBody;
+            if (prNumber) {
+              commentBody = `你好 @${userLogin}！你的元数据更新请求已受理！:rocket:\n\n我们已经为你自动创建了一个 Pull Request，请在 #${prNumber} 中检查文件是否正确。`;
+            } else {
+               commentBody = `你好 @${userLogin}，机器人处理你的元数据提交时似乎遇到了一些问题。请检查上方 Action 的日志输出获取详细信息。`;
+            }
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
