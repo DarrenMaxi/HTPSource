@@ -35,6 +35,18 @@
         "translationType": "manual",
         "availableDownloadTypes": ["direct", "manual"]
       }
+    ],
+    "Modrinth:Simply Optimized": [
+      {
+        "infoPath": "./patches/vm/simply-optimized-patch/info.json",
+        "patchId": "vm/simply-optimized-patch",
+        "patchName": "Simply Optimized 汉化补丁",
+        "author": "VM",
+        "description": "为 Simply Optimized 提供的社区手动汉化。",
+        "latestVersion": "v1",
+        "translationType": "manual",
+        "availableDownloadTypes": ["direct", "manual"]
+      }
     ]
   }
 }
