@@ -1,0 +1,94 @@
+name: 提交新的汉化补丁
+description: 使用此表单提交一个新的汉化补丁或更新现有补丁。
+title: "[补丁提交]: <你的补丁名称>"
+labels: ["new-patch"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您为社区贡献汉化补丁！请仔细填写以下信息。
+        **重要提示：请务必在下方上传一个只包含 `overrides` 文件夹的 `.zip` 压缩包。**
+
+  - type: input
+    id: patchName
+    attributes:
+      label: 汉化补丁名称
+      description: 补丁的正式名称，例如：“艾尔登之环”整合包精翻汉化
+    validations:
+      required: true
+
+  - type: input
+    id: patchVersion
+    attributes:
+      label: 汉化补丁版本号
+      description: 补丁自身的版本号，请遵循语义化版本规范，例如：v1.2.0
+    validations:
+      required: true
+
+  - type: input
+    id: patchAuthor
+    attributes:
+      label: 汉化作者/团队名称
+      description: 你的名字或团队名称，例如：薪王汉化组
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: 补丁描述
+      description: 简要介绍补丁的内容、特色等。
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: translationType
+    attributes:
+      label: 翻译类型
+      description: 选择最符合您补丁的翻译质量/来源类型。
+      options:
+        - manual  # 人工翻译
+        - machine # 机器翻译
+        - official # 官方翻译
+    validations:
+      required: true
+      
+  - type: textarea
+    id: supportedModpacks
+    attributes:
+      label: 支持的整合包列表
+      description: |
+        定义此补丁版本支持的整合包。每行一个，格式为 `类型,项目标识,文件版本`。
+        类型支持 `CurseForge` 或 `Modrinth`。
+        项目标识为 CurseForge Project ID 或 Modrinth Slug/Project ID。
+        文件版本为 CurseForge File ID 或 Modrinth Version ID。
+      placeholder: |
+        CurseForge,654321,4187589
+        Modrinth,mechanized-mayhem,aBcDeFgH
+    validations:
+      required: true
+
+  - type: textarea
+    id: changelog
+    attributes:
+      label: 更新日志
+      description: 描述此版本的主要变更内容。
+    validations:
+      required: true
+      
+  - type: input
+    id: website
+    attributes:
+      label: 项目网站 (可选)
+      description: 你的汉化项目主页、GitHub 仓库或其他相关链接。
+
+  - type: input
+    id: postInstallNotes
+    attributes:
+      label: 安装后提示 (可选)
+      description: 安装成功后需要向用户显示的提示信息，例如提醒配置游戏内字体。
+
+  - type: markdown
+    attributes:
+      value: |
+        **最后一步：** 请将你的补丁压缩包（必须只包含 `overrides` 文件夹）拖拽到下方的文本框中进行上传。
