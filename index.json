@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "lastUpdated": "2024-05-21T13:00:00Z",
   "patches": {
-    "Curse:Techopolis 3": [
+    "curse:Techopolis 3": [
       {
         "infoPath": "./patches/vm/techopolis-3-patch/info.json",
         "patchId": "vm/techopolis-3-patch",
@@ -24,7 +24,7 @@
         "availableDownloadTypes": ["manual"]
       }
     ],
-    "Modrinth:Distant Horizons & Iris Shaders 0.2.3-b+1.21.10.fabric":[
+    "modrinth:Distant Horizons \\u0026 Iris Shaders 0.2.3-b+1.21.10.fabric":[
       {
         "infoPath": "./patches/vm/distant-horizons-iris-shaders-patch/info.json",
         "patchId": "vm/distant-horizons-iris-shaders-patch",
@@ -36,7 +36,7 @@
         "availableDownloadTypes": ["direct", "manual"]
       }
     ],
-    "Modrinth:Simply Optimized": [
+    "modrinth:Simply Optimized": [
       {
         "infoPath": "./patches/vm/simply-optimized-patch/info.json",
         "patchId": "vm/simply-optimized-patch",
