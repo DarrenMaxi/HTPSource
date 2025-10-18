@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "lastUpdated": "2024-05-21T13:00:00Z",
+  "lastUpdated": "2025-10-18T15:00:45.524211+00:00",
   "patches": {
     "Curse:Techopolis 3": [
       {
@@ -11,7 +11,10 @@
         "description": "为 Techopolis 3 整合包提供的社区手动汉化。",
         "latestVersion": "v1",
         "translationType": "manual",
-        "availableDownloadTypes": ["direct", "manual"]
+        "availableDownloadTypes": [
+          "direct",
+          "manual"
+        ]
       },
       {
         "infoPath": "./patches/vn/techopolis-3-patch/info.json",
@@ -21,10 +24,12 @@
         "description": "为 Techopolis 3 整合包提供的社区手动汉化。",
         "latestVersion": "v1111",
         "translationType": "manual",
-        "availableDownloadTypes": ["manual"]
+        "availableDownloadTypes": [
+          "manual"
+        ]
       }
     ],
-    "Modrinth:Distant Horizons & Iris Shaders 0.2.3-b+1.21.10.fabric":[
+    "Modrinth:Distant Horizons & Iris Shaders 0.2.3-b+1.21.10.fabric": [
       {
         "infoPath": "./patches/vm/distant-horizons-iris-shaders-patch/info.json",
         "patchId": "vm/distant-horizons-iris-shaders-patch",
@@ -33,7 +38,10 @@
         "description": "为 Distant Horizons & Iris Shaders 提供的社区手动汉化。",
         "latestVersion": "v1",
         "translationType": "manual",
-        "availableDownloadTypes": ["direct", "manual"]
+        "availableDownloadTypes": [
+          "direct",
+          "manual"
+        ]
       }
     ],
     "Modrinth:Simply Optimized": [
@@ -45,7 +53,24 @@
         "description": "为 Simply Optimized 提供的社区手动汉化。",
         "latestVersion": "v1",
         "translationType": "manual",
-        "availableDownloadTypes": ["direct", "manual"]
+        "availableDownloadTypes": [
+          "direct",
+          "manual"
+        ]
+      }
+    ],
+    "curse:DeceasedCraft": [
+      {
+        "infoPath": "./patches/vm汉化组/亡者世界/info.json",
+        "patchId": "vm汉化组/亡者世界",
+        "patchName": "亡者世界",
+        "author": "VM汉化组",
+        "description": "精翻汉化",
+        "latestVersion": "v1.0.0",
+        "translationType": "manual",
+        "availableDownloadTypes": [
+          "direct"
+        ]
       }
     ]
   }

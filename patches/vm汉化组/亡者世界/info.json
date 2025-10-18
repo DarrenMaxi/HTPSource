@@ -1,0 +1,29 @@
+{
+    "formatVersion": 1,
+    "patchId": "vm汉化组/亡者世界",
+    "patchName": "亡者世界",
+    "author": "VM汉化组",
+    "description": "精翻汉化",
+    "versions": [
+        {
+            "patchVersion": "v1.0.0",
+            "releaseDate": "2025-10-18T15:00:45.519414+00:00",
+            "changelog": "首次发布",
+            "supportedModpackVersions": [
+                {
+                    "type": "Curse",
+                    "name": "DeceasedCraft",
+                    "version": "5.5.5"
+                }
+            ],
+            "downloads": [
+                {
+                    "type": "direct",
+                    "name": "GitHub Raw",
+                    "url": "https://raw.githubusercontent.com/DarrenMaxi/HTPSource/main/patches/vm汉化组/亡者世界/亡者世界-1.0.0.htp",
+                    "sha1": "f440824dd19aacc29a78af81c71eb811c7652189"
+                }
+            ]
+        }
+    ]
+}
