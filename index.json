@@ -12,6 +12,16 @@
         "latestVersion": "v1",
         "translationType": "manual",
         "availableDownloadTypes": ["direct", "manual"]
+      },
+      {
+        "infoPath": "./patches/vn/techopolis-3-patch/info.json",
+        "patchId": "vn/techopolis-3-patch",
+        "patchName": "Techopolis 汉化补丁1",
+        "author": "VM",
+        "description": "为 Techopolis 3 整合包提供的社区手动汉化。",
+        "latestVersion": "v1111",
+        "translationType": "manual",
+        "availableDownloadTypes": ["manual"]
       }
     ]
   }
