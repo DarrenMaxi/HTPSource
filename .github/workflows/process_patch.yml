@@ -3,14 +3,21 @@ name: Process New Patch Submission
 on:
   issues:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'The number of the issue to re-process with the latest workflow'
+        required: true
+        type: string
 
 jobs:
   process-submission:
-    if: github.event.label.name == 'new-patch-submission'
+    # 修改 if 条件，使其在两种触发方式下都能运行
+    if: (github.event.label.name == 'new-patch-submission' && github.event_name == 'issues') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
+      issues: write # 需要读取 issue 内容
       pull-requests: write
 
     steps:
@@ -27,14 +34,57 @@ jobs:
           python -m pip install --upgrade pip
           pip install beautifulsoup4 lxml requests
 
+      # 新增步骤：根据触发方式设置环境变量
+      - name: Set Environment Variables
+        id: set_env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "EVENT_TYPE=manual" >> $GITHUB_OUTPUT
+            echo "ISSUE_NUMBER=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "EVENT_TYPE=label" >> $GITHUB_OUTPUT
+            echo "ISSUE_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            echo "ISSUE_BODY_B64=$(echo '${{ github.event.issue.body }}' | base64 -w 0)" >> $GITHUB_OUTPUT
+            echo "ISSUE_AUTHOR=${{ github.event.issue.user.login }}" >> $GITHUB_OUTPUT
+          fi
+      
+      # 新增步骤：如果手动触发，通过 API 获取 Issue 数据
+      - name: Get Issue Data for Manual Trigger
+        id: issue_data
+        if: steps.set_env.outputs.EVENT_TYPE == 'manual'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.set_env.outputs.ISSUE_NUMBER }}
+            });
+            if (response.status !== 200) {
+              core.setFailed(`Failed to fetch issue #${issueNumber}. Status: ${response.status}`);
+              return;
+            }
+            const issue = response.data;
+            // 使用 base64 编码以避免多行字符串问题
+            const body_b64 = Buffer.from(issue.body || '').toString('base64');
+
+            core.setOutput('body_b64', body_b64);
+            core.setOutput('author', issue.user.login);
+            
       - name: Process submission with Python script
         id: process
         env:
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          # 统一从上游步骤获取环境变量
+          ISSUE_NUMBER: ${{ steps.set_env.outputs.ISSUE_NUMBER }}
+          ISSUE_AUTHOR: ${{ steps.set_env.outputs.EVENT_TYPE == 'manual' && steps.issue_data.outputs.author || steps.set_env.outputs.ISSUE_AUTHOR }}
+          # 从 base64 解码以恢复原始 body
+          ISSUE_BODY: ${{ steps.set_env.outputs.EVENT_TYPE == 'manual' && steps.issue_data.outputs.body_b64 || steps.set_env.outputs.ISSUE_BODY_B64 }}
           REPO_FULL_NAME: ${{ github.repository }}
-        run: python .github/scripts/process.py
+        run: |
+          # 在运行 python 脚本前先解码
+          DECODED_BODY=$(echo "$ISSUE_BODY" | base64 --decode)
+          export ISSUE_BODY="$DECODED_BODY"
+          python .github/scripts/process.py
 
       - name: Create Pull Request
         id: cpr
@@ -45,30 +95,30 @@ jobs:
           title: ${{ steps.process.outputs.pr_title }}
           body: ${{ steps.process.outputs.pr_body }}
           branch: ${{ steps.process.outputs.branch_name }}
-          base: main # 或者你的主分支名称，例如 master
+          base: main # 或者你的主分支名称
           labels: new-patch
-          reviewers: ${{ github.event.issue.user.login }}
-          add-paths: |
-            index.json
-            patches/
+          reviewers: ${{ env.ISSUE_AUTHOR }}
 
       - name: Comment on issue with PR link
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = `${{ steps.cpr.outputs.pull-request-number }}`;
+            const issueNumber = ${{ steps.set_env.outputs.ISSUE_NUMBER }};
+            const userLogin = `${{ env.ISSUE_AUTHOR }}`;
+            let commentBody;
             if (prNumber) {
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `你好 @${{ github.event.issue.user.login }}！感谢你的提交！:tada:\n\n我们已经为你自动创建了一个 Pull Request，请在 #${prNumber} 中检查文件是否正确。仓库维护人员会尽快审核并合并它。`
-              });
+              commentBody = `你好 @${userLogin}！你的补丁提交已处理完毕！:tada:\n\n我们已经为你自动创建了一个 Pull Request，请在 #${prNumber} 中检查文件是否正确。仓库维护人员会尽快审核并合并它。`;
+              if ("${{ github.event_name }}" === "workflow_dispatch") {
+                commentBody = `你好 @${userLogin}，已使用最新的工作流对 Issue #${issueNumber} **重试成功**！:repeat:\n\n新的 Pull Request 在 #${prNumber}，请检查。`
+              }
             } else {
-               await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `你好 @${{ github.event.issue.user.login }}，机器人处理你的提交时似乎遇到了一些问题。请检查上方 Action 的日志输出获取详细信息。`
-              });
+               commentBody = `你好 @${userLogin}，机器人处理你的提交时似乎遇到了一些问题。请检查上方 Action 的日志输出获取详细信息。`;
             }
+            await github.rest.issues.createComment({
+              issue_number: parseInt(issueNumber),
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
