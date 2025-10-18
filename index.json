@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "lastUpdated": "2024-05-21T13:00:00Z",
   "patches": {
-    "curse:Techopolis 3": [
+    "Curse:Techopolis 3": [
       {
         "infoPath": "./patches/vm/techopolis-3-patch/info.json",
         "patchId": "vm/techopolis-3-patch",
@@ -22,6 +22,18 @@
         "latestVersion": "v1111",
         "translationType": "manual",
         "availableDownloadTypes": ["manual"]
+      }
+    ],
+    "Modrinth:Distant Horizons \\u0026 Iris Shaders 0.2.3-b+1.21.10.fabric":[
+      {
+        "infoPath": "./patches/vm/distant-horizons-iris-shaders-patch/info.json",
+        "patchId": "vm/distant-horizons-iris-shaders-patch",
+        "patchName": "Distant Horizons & Iris Shaders 汉化补丁",
+        "author": "VM",
+        "description": "为 Distant Horizons & Iris Shaders 提供的社区手动汉化。",
+        "latestVersion": "v1",
+        "translationType": "manual",
+        "availableDownloadTypes": ["direct", "manual"]
       }
     ]
   }
