@@ -1,0 +1,103 @@
+name: Process New Patch Submission
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  build-and-pr:
+    # 仅当 Issue 包含 "new-patch" 标签时运行
+    if: contains(github.event.issue.labels.*.name, 'new-patch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Add problem matcher
+        run: echo "::add-matcher::.github/problem-matcher.json"
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML requests
+
+      - name: Comment on issue (In Progress)
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🤖 收到您的补丁提交！正在处理中，请稍候...'
+            })
+
+      - name: Run Processing Script
+        id: process
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.repository.name }}
+        run: python .github/scripts/process_patch.py
+        
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat(patch): Add/Update patch ${{ steps.process.outputs.patch_id }} v${{ steps.process.outputs.patch_version }}"
+          branch: "patches/${{ steps.process.outputs.patch_id }}-${{ steps.process.outputs.patch_version }}"
+          delete-branch: true
+          title: "补丁更新: ${{ steps.process.outputs.patch_name }} v${{ steps.process.outputs.patch_version }}"
+          body: |
+            此 PR 由机器人根据 Issue #${{ github.event.issue.number }} 自动创建。
+
+            **补丁信息:**
+            - **名称**: ${{ steps.process.outputs.patch_name }}
+            - **ID**: `${{ steps.process.outputs.patch_id }}`
+            - **版本**: `${{ steps.process.outputs.patch_version }}`
+            - **作者**: `${{ steps.process.outputs.patch_author }}`
+            
+            请审查文件变更是否正确。合并后，补丁将对用户可见。
+            
+            Closes #${{ github.event.issue.number }}
+          labels: patch, automated-pr
+          
+      - name: Comment on issue (Success)
+        if: steps.cpr.outputs.pull-request-number
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ 自动化处理完成！\n\n已为您创建 Pull Request: #${{steps.cpr.outputs.pull-request-number}}，请前往审查。\n\n感谢您的贡献！`
+            })
+            
+      - name: Comment on issue (Failure)
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ 处理失败！\n\n机器人无法自动处理您的提交。请检查您填写的信息和上传的文件是否符合规范。\n\n常见的错误原因：\n- 未上传 `.zip` 附件。\n- `.zip` 压缩包内不只包含 `overrides` 文件夹。\n- 表单信息填写不完整或格式错误。\n\n仓库维护人员将会介入处理。`
+            })
