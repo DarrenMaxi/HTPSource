@@ -3,7 +3,7 @@ import sys
 import json
 import re
 from datetime import datetime, timezone
-from pathlib import Path # <<< ADDED
+from pathlib import Path
 
 def parse_issue_body(body):
     """解析 Issue body，提取表单数据"""
@@ -28,7 +28,7 @@ def parse_issue_body(body):
 
 def create_slug(text):
     """将文本转换为小写、连字符分隔的 slug"""
-    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[^\w\s-]', '', text, flags=re.UNICODE)
     return re.sub(r'[\s_]+', '-', text).strip().lower()
 
 def main():
@@ -49,11 +49,11 @@ def main():
 
     author_slug = issue_author.lower()
     patch_slug = create_slug(data['patchName'])
-    patch_dir = Path('patches') / author_slug / patch_slug # <<< CHANGED
+    patch_dir = Path('patches') / author_slug / patch_slug
     patch_dir.mkdir(parents=True, exist_ok=True)
 
-    info_path = patch_dir / 'info.json' # <<< CHANGED
-    manifest_path = patch_dir / 'translation-manifest.json' # <<< CHANGED
+    info_path = patch_dir / 'info.json'
+    manifest_path = patch_dir / 'translation-manifest.json'
     
     with open(info_path, 'w', encoding='utf-8') as f:
         json.dump(info_data, f, indent=4, ensure_ascii=False)
@@ -63,7 +63,7 @@ def main():
         json.dump(manifest_data, f, indent=4, ensure_ascii=False)
     print(f"Wrote translation-manifest.json to: {manifest_path}")
 
-    index_path = Path('index.json') # <<< CHANGED
+    index_path = Path('index.json')
     if index_path.exists():
         with open(index_path, 'r', encoding='utf-8') as f: index_data = json.load(f)
     else:
@@ -100,7 +100,6 @@ def main():
         
         if not summary_found:
             index_data['patches'][modpack_key].append({
-                # <<< FIXED LINE BELOW
                 "infoPath": f"./{patch_dir.as_posix()}/info.json",
                 "patchId": patch_id, "patchName": info_data.get('patchName', data['patchName']),
                 "author": info_data.get('author', 'N/A'), "description": info_data.get('description', ''),
@@ -119,7 +118,11 @@ def main():
     with open(os.environ['GITHUB_OUTPUT'], 'a') as gh_output:
         print(f"branch_name={branch_name}", file=gh_output)
         print(f"pr_title={pr_title}", file=gh_output)
-        print(f"pr_body={pr_body}", file=gh_output)
+        
+        # Use heredoc syntax for multi-line string
+        print("pr_body<<EOF", file=gh_output)
+        print(pr_body, file=gh_output)
+        print("EOF", file=gh_output)
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,7 @@ import hashlib
 import zipfile
 import shutil
 from datetime import datetime, timezone
-from pathlib import Path  # <<< ADDED
+from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
 
@@ -55,7 +55,7 @@ def calculate_sha1(filepath):
 
 def create_slug(text):
     """将文本转换为小写、连字符分隔的 slug"""
-    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[^\w\s-]', '', text, flags=re.UNICODE)
     return re.sub(r'[\s_]+', '-', text).strip().lower()
 
 def main():
@@ -97,7 +97,7 @@ def main():
     with open('patch.zip', 'wb') as f:
         f.write(response.content)
 
-    temp_dir = Path("temp_patch") # <<< CHANGED
+    temp_dir = Path("temp_patch")
     if temp_dir.exists(): shutil.rmtree(temp_dir)
     temp_dir.mkdir()
     
@@ -117,10 +117,10 @@ def main():
         "supportedModpacks": supported_modpacks_list, "fileManifest": []
     }
 
-    overrides_path = temp_dir / 'overrides' # <<< CHANGED
+    overrides_path = temp_dir / 'overrides'
     for file_path in overrides_path.rglob('*'):
         if file_path.is_file():
-            relative_path = file_path.relative_to(overrides_path).as_posix() # <<< CHANGED
+            relative_path = file_path.relative_to(overrides_path).as_posix()
             manifest['fileManifest'].append({
                 "operation": "overwrite", "path": relative_path, "targetPath": relative_path,
                 "patchedSha1": calculate_sha1(file_path)
@@ -128,18 +128,17 @@ def main():
     
     author_slug = create_slug(data['patchAuthor'])
     patch_slug = create_slug(data['patchName'])
-    patch_dir = Path('patches') / author_slug / patch_slug # <<< CHANGED
+    patch_dir = Path('patches') / author_slug / patch_slug
     patch_dir.mkdir(parents=True, exist_ok=True)
 
-    # <<< FIXED LINE BELOW
     manifest['updateInfoUrl'] = f"https://raw.githubusercontent.com/{repo_full_name}/main/{patch_dir.as_posix()}/info.json"
     
-    manifest_path = temp_dir / 'translation-manifest.json' # <<< CHANGED
+    manifest_path = temp_dir / 'translation-manifest.json'
     with open(manifest_path, 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=4, ensure_ascii=False)
 
     htp_filename = f"{patch_slug}-{data['patchVersion'].lstrip('v')}.htp"
-    htp_filepath = patch_dir / htp_filename # <<< CHANGED
+    htp_filepath = patch_dir / htp_filename
     
     with zipfile.ZipFile(htp_filepath, 'w', zipfile.ZIP_DEFLATED) as htp_zip:
         htp_zip.write(manifest_path, 'translation-manifest.json')
@@ -150,13 +149,12 @@ def main():
                 htp_zip.write(full_path, arcname)
     print(f"Generated HTP file: {htp_filepath}")
 
-    info_path = patch_dir / 'info.json' # <<< CHANGED
+    info_path = patch_dir / 'info.json'
     new_version_entry = {
         "patchVersion": data['patchVersion'], "releaseDate": datetime.now(timezone.utc).isoformat(),
         "changelog": data['changelog'], "supportedModpackVersions": manifest['supportedModpacks'],
         "downloads": [{
             "type": "direct", "name": "GitHub Raw",
-            # <<< FIXED LINE BELOW
             "url": f"https://raw.githubusercontent.com/{repo_full_name}/main/{htp_filepath.as_posix()}",
             "sha1": calculate_sha1(htp_filepath)
         }]
@@ -173,7 +171,7 @@ def main():
         json.dump(info_data, f, indent=4, ensure_ascii=False)
     print(f"Updated info.json: {info_path}")
 
-    index_path = Path('index.json') # <<< CHANGED
+    index_path = Path('index.json')
     if index_path.exists():
         with open(index_path, 'r', encoding='utf-8') as f: index_data = json.load(f)
     else:
@@ -190,7 +188,6 @@ def main():
         summary_exists = any(s['patchId'] == patch_id for s in index_data['patches'][modpack_key])
         if not summary_exists:
             index_data['patches'][modpack_key].append({
-                # <<< FIXED LINE BELOW
                 "infoPath": f"./{patch_dir.as_posix()}/info.json",
                 "patchId": patch_id, "patchName": data['patchName'], "author": data['patchAuthor'],
                 "description": data['description'], "latestVersion": data['patchVersion'],
@@ -210,7 +207,11 @@ def main():
     with open(os.environ['GITHUB_OUTPUT'], 'a') as gh_output:
         print(f"branch_name={branch_name}", file=gh_output)
         print(f"pr_title={pr_title}", file=gh_output)
-        print(f"pr_body={pr_body}", file=gh_output)
+        
+        # Use heredoc syntax for multi-line string
+        print("pr_body<<EOF", file=gh_output)
+        print(pr_body, file=gh_output)
+        print("EOF", file=gh_output)
 
 if __name__ == "__main__":
     main()
