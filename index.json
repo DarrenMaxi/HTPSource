@@ -24,7 +24,7 @@
         "availableDownloadTypes": ["manual"]
       }
     ],
-    "modrinth:Distant Horizons \\u0026 Iris Shaders 0.2.3-b+1.21.10.fabric":[
+    "modrinth:Distant Horizons \u0026 Iris Shaders 0.2.3-b+1.21.10.fabric":[
       {
         "infoPath": "./patches/vm/distant-horizons-iris-shaders-patch/info.json",
         "patchId": "vm/distant-horizons-iris-shaders-patch",
