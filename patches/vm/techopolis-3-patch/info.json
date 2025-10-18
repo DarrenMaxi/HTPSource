@@ -23,7 +23,7 @@
         {
           "type": "direct",
           "name": "GitHub Release (推荐)",
-          "url": "http://tntfiles.com/8b01jvpsum",
+          "url": "https://github.com/DarrenMaxi/HTPSource/raw/refs/heads/main/patches/vm/techopolis-3-patch/Techopolis-v1.htp",
           "sha1": "46ab4e10ba92d3dc2eab2b045bdb6292d964df4e",
           "postInstallAction": {
             "url": "https://vmct-cn.top/",
